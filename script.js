@@ -33,7 +33,7 @@ const getCountryData = function (country) {
     const [data] = JSON.parse(this.responseText);
     renderCountry(data);
 
-    const neighbour = data.borders[0];
+    const neighbour = data.borders?.[0];
     const request2 = new XMLHttpRequest();
     request2.open('GET', `https://restcountries.com/v3.1/alpha/${neighbour}`);
     request2.send();
@@ -43,7 +43,7 @@ const getCountryData = function (country) {
     });
   });
 };
-getCountryData('france');
+// getCountryData('france');
 
 // Callback hell
 setTimeout(() => {
@@ -65,6 +65,13 @@ setTimeout(() => {
 const getCountryData2 = function (country) {
   const data = fetch(`https://restcountries.com/v3.1/name/${country}`)
     .then(response => response.json())
-    .then(data => renderCountry(data[0]));
+    .then(data => {
+      renderCountry(data[0]);
+
+      const neighbour = data[0].borders?.[0];
+      return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
+    })
+    .then(response => response.json())
+    .then(data => renderCountry(data[0], 'neighbour'));
 };
-getCountryData2('usa');
+getCountryData2('portugal');
