@@ -95,11 +95,11 @@ const getCountryData2 = function (country) {
     )
     .finally(() => (countriesContainer.style.opacity = 1));
 };
-btn.addEventListener('click', function () {
-  // getCountryData2('usssa');
-  // getCountryData2('australia');
-  getCountryData2('usa');
-});
+// btn.addEventListener('click', function () {
+// getCountryData2('usssa');
+// getCountryData2('australia');
+// getCountryData2('usa');
+// });
 
 // Coding Challenge #1
 const whereAmI = function (lat, lng) {
@@ -123,9 +123,9 @@ const whereAmI = function (lat, lng) {
     .catch(err => console.log(err.message))
     .finally(() => (countriesContainer.style.opacity = 1));
 };
-whereAmI(52.508, 13.381);
-whereAmI(19.037, 72.873);
-whereAmI(-33.933, 18.474);
+// whereAmI(52.508, 13.381);
+// whereAmI(19.037, 72.873);
+// whereAmI(-33.933, 18.474);
 
 // Microtask queue > callback queue
 console.log('Test start');
@@ -192,3 +192,55 @@ Promise.reject(new Error('Problem!')).catch(x => console.error(x));
 //     }, 1000);
 //   }, 1000);
 // }, 1000);
+
+// Promisifying geolocation
+/** original
+navigator.geolocation.getCurrentPosition(
+  position => console.log(position),
+  error => console.log(error)
+);
+console.log('Getting position');
+*/
+/** Solution #1 
+const getPosition = function () {
+  return new Promise(function (resolve, reject) {
+    navigator.geolocation.getCurrentPosition(
+      pos => resolve(pos),
+      err => reject(err)
+    );
+  });
+};*/
+/** Solution #2 */
+const getPosition = function () {
+  return new Promise((resolve, reject) =>
+    navigator.geolocation.getCurrentPosition(resolve, reject)
+  );
+};
+const getJSON2 = function (url, errMsg = 'Something went wrong') {
+  return fetch(url).then(response => {
+    if (!response.ok) throw new Error(`${errMsg} (${response.status})`);
+    return response.json();
+  });
+};
+const whereAmI2 = function () {
+  getPosition()
+    .then(pos => {
+      const { latitude: lat, longitude: lng } = pos.coords;
+      const apiKey = '358717509146066819060x13751';
+      const url = `https://geocode.xyz/${lat},${lng}?geoit=json&auth=${apiKey}`;
+      return getJSON2(url);
+    })
+    .then(data => {
+      console.log(data);
+      if (data.error) throw new Error(`Geocoding problem (${data.error.code})`);
+      console.log(`You are in ${data.city}, ${data.country}`);
+      return getJSON2(
+        `https://restcountries.com/v3.1/name/${data.country}`,
+        `Country not found`
+      );
+    })
+    .then(data => renderCountry(data[0]))
+    .catch(err => console.log(err.message))
+    .finally(() => (countriesContainer.style.opacity = 1));
+};
+btn.addEventListener('click', whereAmI2);
