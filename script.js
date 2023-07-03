@@ -61,3 +61,10 @@ setTimeout(() => {
     }, 1000);
   }, 1000);
 }, 1000);
+
+const getCountryData2 = function (country) {
+  const data = fetch(`https://restcountries.com/v3.1/name/${country}`)
+    .then(response => response.json())
+    .then(data => renderCountry(data[0]));
+};
+getCountryData2('usa');
