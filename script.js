@@ -49,21 +49,21 @@ const getCountryData = function (country) {
 // getCountryData('france');
 
 // Callback hell
-setTimeout(() => {
-  console.log(1);
-  setTimeout(() => {
-    console.log(2);
-    setTimeout(() => {
-      console.log(3);
-      setTimeout(() => {
-        console.log(4);
-        setTimeout(() => {
-          console.log(5);
-        }, 1000);
-      }, 1000);
-    }, 1000);
-  }, 1000);
-}, 1000);
+// setTimeout(() => {
+//   console.log(1);
+//   setTimeout(() => {
+//     console.log(2);
+//     setTimeout(() => {
+//       console.log(3);
+//       setTimeout(() => {
+//         console.log(4);
+//         setTimeout(() => {
+//           console.log(5);
+//         }, 1000);
+//       }, 1000);
+//     }, 1000);
+//   }, 1000);
+// }, 1000);
 
 // const getCountryData2 = function (country) {
 //   const data = fetch(`https://restcountries.com/v3.1/name/${country}`)
@@ -117,3 +117,29 @@ btn.addEventListener('click', function () {
   // getCountryData2('australia');
   getCountryData2('usa');
 });
+
+// Coding Challenge #1
+const whereAmI = function (lat, lng) {
+  const apiKey = '120702584194319e15943700x51692';
+  const url = `https://geocode.xyz/${lat},${lng}?geoit=json&auth=${apiKey}`;
+  fetch(url)
+    .then(res => {
+      if (!res.ok) throw new Error(`Something went wrong! (${res.status})`);
+      return res.json();
+    })
+    .then(data => {
+      if (data.error) throw new Error(`Geocoding problem (${data.error.code})`);
+      console.log(`You are in ${data.city}, ${data.country}`);
+      return fetch(`https://restcountries.com/v3.1/name/${data.country}`);
+    })
+    .then(res => {
+      if (!res.ok) throw new Error(`Country not found (${res.status})`);
+      return res.json();
+    })
+    .then(data => renderCountry(data[0]))
+    .catch(err => console.log(err.message))
+    .finally(() => (countriesContainer.style.opacity = 1));
+};
+whereAmI(52.508, 13.381);
+whereAmI(19.037, 72.873);
+whereAmI(-33.933, 18.474);
