@@ -316,15 +316,15 @@ btn.addEventListener('click', whereAmI3);
 //   .catch(err => console.log(`${err.errMsg} ❌`))
 //   .finally(() => console.log('3: Finished getting location'));
 console.log('1: Will get location');
-(async () => {
-  try {
-    const response = await whereAmI3();
-    console.log(`2: ${response}`);
-  } catch (err) {
-    console.log(`${err.errMsg} ❌`);
-  }
-  console.log('3: Finished getting location');
-})();
+// (async () => {
+//   try {
+//     const response = await whereAmI3();
+//     console.log(`2: ${response}`);
+//   } catch (err) {
+//     console.log(`${err.errMsg} ❌`);
+//   }
+//   console.log('3: Finished getting location');
+// })();
 
 // Running Promises in Parallel
 const get3Countries = async function (c1, c2, c3) {
@@ -345,3 +345,36 @@ const get3Countries = async function (c1, c2, c3) {
   }
 };
 get3Countries('usa', 'portugal', 'italy');
+
+// Promise.race
+(async function () {
+  const res = await Promise.race([
+    getJSON(`https://restcountries.com/v3.1/name/italy`),
+    getJSON(`https://restcountries.com/v3.1/name/egypt`),
+    getJSON(`https://restcountries.com/v3.1/name/mexico`),
+  ]);
+  console.log(res[0]);
+})();
+// Set time limit for a fetch
+const timeout = function (sec) {
+  return new Promise(function (_, reject) {
+    setTimeout(() => reject(new Error('Request took too long!')), sec * 1000);
+  });
+};
+Promise.race([getJSON(`https://restcountries.com/v3.1/name/italy`), timeout(2)])
+  .then(res => console.log(res[0]))
+  .catch(err => console.error(err));
+
+// Promise.allSettled
+Promise.allSettled([
+  Promise.resolve('success'),
+  Promise.reject('ERROR'),
+  Promise.resolve('another success'),
+]).then(res => console.log(res));
+
+// Promise.any
+Promise.any([
+  Promise.reject('ERROR'),
+  Promise.resolve('another success'),
+  Promise.resolve('success'),
+]).then(res => console.log(res));
