@@ -244,3 +244,41 @@ const whereAmI2 = function () {
     .finally(() => (countriesContainer.style.opacity = 1));
 };
 btn.addEventListener('click', whereAmI2);
+
+// Coding Challenge #2
+const createImage = function (imgPath) {
+  return new Promise(function (resolve, reject) {
+    const img = document.createElement('img');
+    img.src = imgPath;
+    img.addEventListener('load', function () {
+      document.querySelector('.images').append(img);
+      resolve(img);
+    });
+    img.addEventListener('error', () =>
+      reject(new Error(`Image not found: wrong path (${imgPath})`))
+    );
+  });
+};
+
+let currImgID = 1;
+let currImg;
+createImage(`img/img-${currImgID}.jpg`)
+  .then(img => {
+    currImg = img;
+    currImgID++;
+    return wait(2);
+  })
+  .then(() => {
+    currImg.style.display = 'none';
+    return createImage(`img/img-${currImgID}.jpg`);
+  })
+  .then(img => {
+    currImg = img;
+    currImgID++;
+    return wait(2);
+  })
+  .then(() => {
+    currImg.style.display = 'none';
+    return createImage(`img/img-${currImgID}.jpg`);
+  })
+  .catch(err => alert(err.message));
