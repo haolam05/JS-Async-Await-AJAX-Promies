@@ -4,6 +4,10 @@ const btn = document.querySelector('.btn-country');
 const countriesContainer = document.querySelector('.countries');
 
 ///////////////////////////////////////
+const renderError = function (msg) {
+  countriesContainer.insertAdjacentText('beforeend', msg);
+};
+
 const renderCountry = function (data, className = '') {
   const html = `
   <article class="country ${className}">
@@ -23,7 +27,6 @@ const renderCountry = function (data, className = '') {
 `;
 
   countriesContainer.insertAdjacentHTML('beforeend', html);
-  countriesContainer.style.opacity = 1;
 };
 const getCountryData = function (country) {
   const request = new XMLHttpRequest();
@@ -72,6 +75,12 @@ const getCountryData2 = function (country) {
       return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
     })
     .then(response => response.json())
-    .then(data => renderCountry(data[0], 'neighbour'));
+    .then(data => renderCountry(data[0], 'neighbour'))
+    .catch(err =>
+      renderError(`Something went wrong ❌ ${err.message}. Try again!`)
+    )
+    .finally(() => (countriesContainer.style.opacity = 1));
 };
-getCountryData2('portugal');
+btn.addEventListener('click', function () {
+  getCountryData2('sdfsdfds');
+});
