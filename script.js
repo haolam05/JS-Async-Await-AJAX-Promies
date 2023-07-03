@@ -48,23 +48,6 @@ const getCountryData = function (country) {
 };
 // getCountryData('france');
 
-// Callback hell
-// setTimeout(() => {
-//   console.log(1);
-//   setTimeout(() => {
-//     console.log(2);
-//     setTimeout(() => {
-//       console.log(3);
-//       setTimeout(() => {
-//         console.log(4);
-//         setTimeout(() => {
-//           console.log(5);
-//         }, 1000);
-//       }, 1000);
-//     }, 1000);
-//   }, 1000);
-// }, 1000);
-
 // const getCountryData2 = function (country) {
 //   const data = fetch(`https://restcountries.com/v3.1/name/${country}`)
 //     .then(response => {
@@ -153,3 +136,59 @@ Promise.resolve('Resolved Promise #2').then(res => {
   console.log(res);
 });
 console.log('Test end');
+
+// Create & Consume Promises
+const lotteryPromise = new Promise(function (resolve, reject) {
+  console.log('Lottery draw is happening');
+  setTimeout(function () {
+    if (Math.random() >= 0.5) {
+      resolve('You WIN 💰💸💴');
+    } else {
+      reject(new Error('You lost your money 💩'));
+    }
+  }, 2000);
+});
+// lotteryPromise.then(
+//   res => console.log(res),
+//   err => console.log(err)
+// );
+lotteryPromise.then(res => console.log(res)).catch(err => console.log(err));
+
+// Promisifying callbacks
+const wait = sec => new Promise(resolve => setTimeout(resolve, sec * 1000));
+wait(1)
+  .then(() => {
+    console.log(1);
+    return wait(1);
+  })
+  .then(() => {
+    console.log(2);
+    return wait(1);
+  })
+  .then(() => {
+    console.log(3);
+    return wait(1);
+  })
+  .then(() => {
+    console.log(4);
+    return wait(1);
+  })
+  .then(() => console.log(5));
+Promise.resolve('abc').then(x => console.log(x));
+Promise.reject(new Error('Problem!')).catch(x => console.error(x));
+// Callback hell
+// setTimeout(() => {
+//   console.log(1);
+//   setTimeout(() => {
+//     console.log(2);
+//     setTimeout(() => {
+//       console.log(3);
+//       setTimeout(() => {
+//         console.log(4);
+//         setTimeout(() => {
+//           console.log(5);
+//         }, 1000);
+//       }, 1000);
+//     }, 1000);
+//   }, 1000);
+// }, 1000);
