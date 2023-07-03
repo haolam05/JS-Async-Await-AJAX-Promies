@@ -259,7 +259,6 @@ const createImage = function (imgPath) {
     );
   });
 };
-
 // let currImgID = 1;
 // let currImg;
 // createImage(`img/img-${currImgID}.jpg`)
@@ -282,6 +281,36 @@ const createImage = function (imgPath) {
 //     return createImage(`img/img-${currImgID}.jpg`);
 //   })
 //   .catch(err => alert(err.message));
+
+// Coding Challenge #3
+const loadNPause = async function () {
+  try {
+    // no need global variable and cleaner compared to #2
+    let img = await createImage(`img/img-1.jpg`);
+    await wait(2);
+    img.style.display = 'none';
+
+    img = await createImage(`img/img-2.jpg`);
+    await wait(2);
+    img.style.display = 'none';
+
+    img = await createImage(`img/img-3.jpg`);
+    await wait(2);
+    img.style.display = 'none';
+  } catch (err) {
+    console.error(`${err.message} ❌`);
+  }
+};
+// loadNPause();
+const loadAll = async function (imgArr) {
+  try {
+    const imgs = await Promise.all(imgArr.map(im => createImage(im)));
+    imgs.forEach(img => img.classList.add('parallel'));
+  } catch (err) {
+    console.error(`${err.message} ❌`);
+  }
+};
+loadAll(['img/img-1.jpg', 'img/img-2.jpg', 'img/img-3.jpg']);
 
 // Consuming promises with async/await
 const whereAmI3 = async function () {
