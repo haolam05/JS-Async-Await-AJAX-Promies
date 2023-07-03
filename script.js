@@ -243,7 +243,7 @@ const whereAmI2 = function () {
     .catch(err => console.log(err.message))
     .finally(() => (countriesContainer.style.opacity = 1));
 };
-btn.addEventListener('click', whereAmI2);
+// btn.addEventListener('click', whereAmI2);
 
 // Coding Challenge #2
 const createImage = function (imgPath) {
@@ -260,25 +260,68 @@ const createImage = function (imgPath) {
   });
 };
 
-let currImgID = 1;
-let currImg;
-createImage(`img/img-${currImgID}.jpg`)
-  .then(img => {
-    currImg = img;
-    currImgID++;
-    return wait(2);
-  })
-  .then(() => {
-    currImg.style.display = 'none';
-    return createImage(`img/img-${currImgID}.jpg`);
-  })
-  .then(img => {
-    currImg = img;
-    currImgID++;
-    return wait(2);
-  })
-  .then(() => {
-    currImg.style.display = 'none';
-    return createImage(`img/img-${currImgID}.jpg`);
-  })
-  .catch(err => alert(err.message));
+// let currImgID = 1;
+// let currImg;
+// createImage(`img/img-${currImgID}.jpg`)
+//   .then(img => {
+//     currImg = img;
+//     currImgID++;
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currImg.style.display = 'none';
+//     return createImage(`img/img-${currImgID}.jpg`);
+//   })
+//   .then(img => {
+//     currImg = img;
+//     currImgID++;
+//     return wait(2);
+//   })
+//   .then(() => {
+//     currImg.style.display = 'none';
+//     return createImage(`img/img-${currImgID}.jpg`);
+//   })
+//   .catch(err => alert(err.message));
+
+// Consuming promises with async/await
+const whereAmI3 = async function () {
+  try {
+    const position = await getPosition();
+    const apiKey = '358717509146066819060x13751';
+    const { latitude: lat, longitude: lng } = position.coords;
+    const urlGeo = `https://geocode.xyz/${lat},${lng}?geoit=json&auth=${apiKey}`;
+
+    const responseGeo = await fetch(urlGeo);
+    if (!responseGeo.ok) throw new Error('Problem getting location data');
+    const dataGeo = await responseGeo.json();
+    // console.log(`You are in ${dataGeo.city}, ${dataGeo.country}`);
+
+    const urlCountry = `https://restcountries.com/v3.1/name/${dataGeo.country}`;
+    const responseCountry = await fetch(urlCountry);
+    if (!responseCountry.ok) throw new Error('Problem getting country data');
+    const dataCountry = await responseCountry.json();
+    console.log(dataCountry);
+    renderCountry(dataCountry[0]);
+    countriesContainer.style.opacity = 1;
+    return `You are in ${dataGeo.city}, ${dataGeo.country}`;
+  } catch (err) {
+    console.error(err);
+    renderError(`${err.message} ❌`);
+  }
+};
+btn.addEventListener('click', whereAmI3);
+// console.log('1: Will get location');
+// whereAmI3()
+//   .then(res => console.log(`2: ${res}`))
+//   .catch(err => console.log(`${err.errMsg} ❌`))
+//   .finally(() => console.log('3: Finished getting location'));
+console.log('1: Will get location');
+(async () => {
+  try {
+    const response = await whereAmI3();
+    console.log(`2: ${response}`);
+  } catch (err) {
+    console.log(`${err.errMsg} ❌`);
+  }
+  console.log('3: Finished getting location');
+})();
