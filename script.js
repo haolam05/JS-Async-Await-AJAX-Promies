@@ -65,16 +65,47 @@ setTimeout(() => {
   }, 1000);
 }, 1000);
 
+// const getCountryData2 = function (country) {
+//   const data = fetch(`https://restcountries.com/v3.1/name/${country}`)
+//     .then(response => {
+//       if (!response.ok) throw new Error(`Country not found! (${response.status})`);
+//       return response.json();
+//     })
+//     .then(data => {
+//       renderCountry(data[0]);
+
+//       const neighbour = data[0].borders?.[0];
+//       return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
+//     })
+//     .then(response => response.json())
+//     .then(data => renderCountry(data[0], 'neighbour'))
+//     .catch(err =>
+//       renderError(`Something went wrong ❌ ${err.message}. Try again!`)
+//     )
+//     .finally(() => (countriesContainer.style.opacity = 1));
+// };
+const getJSON = function (url, errMsg = 'Something went wrong') {
+  return fetch(url).then(response => {
+    if (!response.ok) throw new Error(`${errMsg} (${response.status})`);
+    return response.json();
+  });
+};
 const getCountryData2 = function (country) {
-  const data = fetch(`https://restcountries.com/v3.1/name/${country}`)
-    .then(response => response.json())
+  getJSON(
+    `https://restcountries.com/v3.1/name/${country}`,
+    'Country not found!'
+  )
     .then(data => {
       renderCountry(data[0]);
 
       const neighbour = data[0].borders?.[0];
-      return fetch(`https://restcountries.com/v3.1/alpha/${neighbour}`);
+      if (!neighbour) throw new Error('No Neighbor!');
+
+      return getJSON(
+        `https://restcountries.com/v3.1/alpha/${neighbour}`,
+        'Country not found!'
+      );
     })
-    .then(response => response.json())
     .then(data => renderCountry(data[0], 'neighbour'))
     .catch(err =>
       renderError(`Something went wrong ❌ ${err.message}. Try again!`)
@@ -82,5 +113,7 @@ const getCountryData2 = function (country) {
     .finally(() => (countriesContainer.style.opacity = 1));
 };
 btn.addEventListener('click', function () {
-  getCountryData2('sdfsdfds');
+  // getCountryData2('usssa');
+  // getCountryData2('australia');
+  getCountryData2('usa');
 });
